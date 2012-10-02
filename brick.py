@@ -48,29 +48,27 @@ def drawLevel():
 			bricks.append(newBrick)
 
 # Function to check if the ball has hit a brick.
-def ballHasHitBrick(ball, bricks):
-	for b in bricks:
-		if ball.bottom == b[0].top or ball.top == b[0].bottom:
-			if ball.right >= b[0].left and ball.left <= b[0].right:
-				return True
-			else:
-				return False
-		elif ball.left == b[0].right or ball.right == b[0].left:
-			if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
-				return True
-			else:
-				return False
-	return False
+def ballHasHitBrick(ball, b):
+	if ball.bottom == b[0].top or ball.top == b[0].bottom:
+		if ball.right >= b[0].left and ball.left <= b[0].right:
+			return True
+	elif ball.left == b[0].right or ball.right == b[0].left:
+		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
+			return True
+	else: 
+		return False
 
 if __name__ == '__main__':
 	Run = True
+	lives = 3
+	score = 0
 	drawLevel()
 	while Run:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				Run = False
 
-		# Ball bounces off the walls.
+		# Ball bounces off the walls and ceiling, player loses a life when the ball hits the bottom of the screen.
 		ball = ball.move(velocity)
 		if ball.left < 0 or ball.right > SCREENWIDTH:
 			velocity[0] = -velocity[0]
@@ -81,7 +79,7 @@ if __name__ == '__main__':
 
 		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball chnages direction.
 		for b in bricks:
-			if ballHasHitBrick(ball, bricks):
+			if ballHasHitBrick(ball, b):
 				if b[0].right == ball.left or b[0].left == ball.right:
 					velocity[0] = -velocity[0]
 				if b[0].bottom == ball.top or b[0].top == ball.bottom:
