@@ -31,8 +31,8 @@ BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
 # Handle ball movement and animation
-horizontal = 2
-vertical = 2
+horizontal = 5
+vertical = 5
 velocity = [horizontal, vertical]
 
 # Setup the bricks
@@ -41,42 +41,50 @@ HEIGHT = 20
 color = [BLACK, WHITE, RED, GREEN, PURPLE]
 bricks = []
 # Lays out bricks in 8x8 grid
-for i in range(3, 11):
-	for j in range(3, 11):
-		newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
-		bricks.append(newBrick)
+def drawLevel():
+	for i in range(3, 11):
+		for j in range(3, 11):
+			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
+			bricks.append(newBrick)
 
-# Function to check if the ball has hit a brick. NB This function has not been tested, although theoretically should work.
+# Function to check if the ball has hit a brick.
 def ballHasHitBrick(ball, bricks):
 	for b in bricks:
-		if b[0].right = ball.left or b[0].left = ball.right or b[0].bottom = ball.top or b[0].top = ball.bottom:
-			return True
+		if ball.bottom == b[0].top or ball.top == b[0].bottom:
+			if ball.right >= b[0].left and ball.left <= b[0].right:
+				return True
+			else:
+				return False
+		elif ball.left == b[0].right or ball.right == b[0].left:
+			if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
+				return True
+			else:
+				return False
 	return False
 
 if __name__ == '__main__':
 	Run = True
+	drawLevel()
 	while Run:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				Run = False
 
+		# Ball bounces off the walls.
 		ball = ball.move(velocity)
 		if ball.left < 0 or ball.right > SCREENWIDTH:
 			velocity[0] = -velocity[0]
 		if ball.top < 0 or ball.bottom > SCREENHEIGHT:
 			velocity[1] = -velocity[1]
 
-		# Enter code here. If ball hits left or right side of the brick, velocity[0] = -velocity[0]
-		# Enter code here. If ball hits the top or bottom of the brick, velocity[1] = -velocity[1]
-
 		screen.fill((20,50,150))
 
-		# Bricks collision detection, if the ball hits a brick, the brick is removed.
+		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball chnages direction.
 		for b in bricks:
-			if b[0].colliderect(ball):
-				if b[0].right >= ball.left or b[0].left <= ball.right:
+			if ballHasHitBrick(ball, bricks):
+				if b[0].right == ball.left or b[0].left == ball.right:
 					velocity[0] = -velocity[0]
-				if b[0].bottom >= ball.top or b[0].top <= ball.bottom:
+				if b[0].bottom == ball.top or b[0].top == ball.bottom:
 					velocity[1] = -velocity[1]
 				bricks.remove(b)
 			pygame.draw.rect(screen, b[1], b[0])
@@ -85,5 +93,5 @@ if __name__ == '__main__':
 		pygame.draw.rect(screen, BLACK, player)
 
 		pygame.display.flip()
-		clock.tick(60)	
+		clock.tick(30)	
 	pygame.quit()
