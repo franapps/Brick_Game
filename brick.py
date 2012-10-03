@@ -26,7 +26,6 @@ PADDLEHEIGHT = 20
 player = pygame.Rect(int((SCREENWIDTH/2)-(PADDLEWIDTH/2)), int(SCREENHEIGHT-PADDLEHEIGHT), PADDLEWIDTH, PADDLEHEIGHT)
 
 # Draw the ball
-#ball = pygame.draw.circle(screen, WHITE, (int(SCREENWIDTH/2),int(SCREENHEIGHT/2)), 5, 0)
 BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
@@ -37,6 +36,17 @@ ballSpeed = [horizontal, vertical]
 
 # Handle paddle horizontal movement (the paddle will never move vertically)
 paddleSpeed = 5
+
+# set up fonts
+font = pygame.font.SysFont(None, 36)
+TEXTCOLOR = (255,255,255)
+
+# creates a function to draw text
+def drawText(text, font, surface, x, y):
+	textobj = font.render(text, 1, TEXTCOLOR)
+	textrect = textobj.get_rect()
+	textrect.topleft = (x, y)
+	surface.blit(textobj, textrect)
 
 # Setup the bricks
 WIDTH = 50
@@ -72,11 +82,42 @@ if __name__ == '__main__':
 	Run = True
 	lives = 3
 	score = 0
+	moveLeft = moveRight = False
 	drawLevel()
+	# Run game loop
 	while Run:
 		for event in pygame.event.get():
+			# handles quit event
 			if event.type == pygame.QUIT:
 				Run = False
+			# Handles keybindings
+			if event.type == KEYDOWN:
+				if event.key == K_LEFT or event.key == ord('a'):
+					moveRight = False
+					moveLeft = True
+				if event.key == K_RIGHT or event.key == ord('d'):
+					moveRight = True
+					moveLeft = False
+			if event.type == KEYUP:
+				if event.key == K_ESCAPE:
+					Run = False
+				if event.key == K_LEFT or event.key == ord('a'):
+					moveLeft = False
+				if event.key == K_RIGHT or event.key == ord('d'):
+					moveRight = False
+		# Handles control using the mouse
+			if event.type == MOUSEMOTION:
+				# If the mouse moves, move the player where the cursor is.
+				player.move_ip(event.pos[0] - player.centerx, 0)
+
+		# Move the paddle left and right.
+		if moveLeft and player.left > 0:
+			player.move_ip(-1 * paddleSpeed, 0)
+		if moveRight and player.right < SCREENWIDTH:
+			player.move_ip(paddleSpeed, 0)
+
+		# move the mouse cursor to match the player.
+		pygame.mouse.set_pos(player.centerx, player.centery)
 
 		# Ball bounces off the walls and ceiling, player loses a life when the ball hits the bottom of the screen.
 		ball = ball.move(ballSpeed)
@@ -87,10 +128,12 @@ if __name__ == '__main__':
 		if ball.bottom > SCREENHEIGHT:
 			ballSpeed[1] = -ballSpeed[1]
 			lives -= 1
+		if ball.bottom == player.top:
+			ballSpeed[1] = -ballSpeed[1]
 
 		screen.fill((20,50,150))
 
-		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball chnages direction.
+		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball changes direction.
 		for b in bricks:
 			if ballHasHitBrick(ball, b):
 				if b[0].right == ball.left or b[0].left == ball.right:
@@ -104,6 +147,10 @@ if __name__ == '__main__':
 		# Every 5000 points the player gains an extra life
 		if score != 0 and score % 5000 == 0:
 			lives += 1
+			score += 1
+
+		drawText('Score: %s' % (score), font, screen, 10, 0)
+		drawText('Lives: %s' % (lives), font, screen, 150, 0)
 
 		pygame.draw.rect(screen, WHITE, ball)
 		pygame.draw.rect(screen, BLACK, player)
