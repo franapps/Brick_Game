@@ -1,4 +1,4 @@
-import os, pygame, random
+import os, pygame, random, math
 from pygame.locals import *
 pygame.init()
 
@@ -29,10 +29,13 @@ player = pygame.Rect(int((SCREENWIDTH/2)-(PADDLEWIDTH/2)), int(SCREENHEIGHT-PADD
 BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
-# Handle ball movement and animation
+# Handle ball movement and deviation.
 horizontal = 3
 vertical = 3
 ballSpeed = [horizontal, vertical]
+# deviation
+devx = int(round(horizontal/2))
+devy = int(round(vertical/2))
 
 # Handle paddle horizontal movement (the paddle will never move vertically)
 paddleSpeed = 5
@@ -60,11 +63,9 @@ def drawLevel():
 			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
 			bricks.append(newBrick)
 
-# deviation
-dev = 2
 # Function to check if the ball has hit the paddle - Under construction
 def ballHasHitPaddle(ball, paddle):
-	if (paddle.top - dev) <= ball.bottom <= (paddle.top + dev):
+	if (paddle.top - devy) <= ball.bottom <= (paddle.top + devy):
 		if ball.right >= paddle.left and ball.left <= paddle.right:
 			return True
 	else:
@@ -72,10 +73,10 @@ def ballHasHitPaddle(ball, paddle):
 
 # Function to check if the ball has hit a brick.
 def ballHasHitBrick(ball, b):
-	if (b[0].top - dev) <= ball.bottom <= (b[0].top + dev) or (b[0].bottom - dev) <= ball.top <= (b[0].bottom + dev):
+	if (b[0].top - devy) <= ball.bottom <= (b[0].top + devy) or (b[0].bottom - devy) <= ball.top <= (b[0].bottom + devy):
 		if ball.right >= b[0].left and ball.left <= b[0].right:
 			return True
-	elif (b[0].right - dev) <= ball.left <= (b[0].right + dev) or (b[0].left - dev) <= ball.right <= (b[0].left + dev):
+	elif (b[0].right - devx) <= ball.left <= (b[0].right + devx) or (b[0].left - devx) <= ball.right <= (b[0].left + devx):
 		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
 			return True
 	else: 
@@ -138,7 +139,7 @@ if __name__ == '__main__':
 			ballSpeed[1] = -ballSpeed[1]
 			lives -= 1
 		if ballHasHitPaddle(ball, player): 
-			if (player.top - dev) <= ball.bottom <= (player.top + dev):
+			if (player.top - devy) <= ball.bottom <= (player.top + devy):
 				ballSpeed[1] = -ballSpeed[1]
 
 		screen.fill((20,50,150))
@@ -146,9 +147,9 @@ if __name__ == '__main__':
 		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball changes direction.
 		for b in bricks:
 			if ballHasHitBrick(ball, b):
-				if (b[0].right - dev) <= ball.left <= (b[0].right + dev) or (b[0].left - dev) <= ball.right <= (b[0].left + dev):
+				if (b[0].right - devx) <= ball.left <= (b[0].right + devx) or (b[0].left - devx) <= ball.right <= (b[0].left + devx):
 					ballSpeed[0] = -ballSpeed[0]
-				elif (b[0].top - dev) <= ball.bottom <= (b[0].top + dev) or (b[0].bottom - dev) <= ball.top <= (b[0].bottom + dev):
+				elif (b[0].top - devy) <= ball.bottom <= (b[0].top + devy) or (b[0].bottom - devy) <= ball.top <= (b[0].bottom + devy):
 					ballSpeed[1] = -ballSpeed[1]
 				else:
 					None
