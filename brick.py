@@ -62,7 +62,7 @@ def drawLevel():
 			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
 			bricks.append(newBrick)
 
-# Function to check if the ball has hit the paddle - Under construction
+# Function to check if the ball has hit the paddle - Under construction - currently does not recognise side collisions.
 def ballHasHitPaddle(ball, paddle):
 	if (paddle.top - devy) <= ball.bottom <= (paddle.top + devy):
 		if ball.right >= paddle.left and ball.left <= paddle.right:
@@ -85,6 +85,7 @@ if __name__ == '__main__':
 	Run = True
 	lives = 3
 	score = 0
+	pause = False
 	moveLeft = moveRight = False
 	drawLevel()
 	# Run game loop
@@ -104,6 +105,8 @@ if __name__ == '__main__':
 			if event.type == KEYUP:
 				if event.key == K_ESCAPE:
 					Run = False
+				if event.key == K_SPACE:
+					pause = True
 				if event.key == K_LEFT or event.key == ord('a'):
 					moveLeft = False
 				if event.key == K_RIGHT or event.key == ord('d'):
@@ -168,6 +171,19 @@ if __name__ == '__main__':
 		# Draw the ball and the paddle
 		pygame.draw.rect(screen, WHITE, ball)
 		pygame.draw.rect(screen, BLACK, player)
+
+		# Pause Loop.
+		while pause == True:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pause = False
+					Run = False
+				if event.type == KEYUP:
+					if event.key == K_ESCAPE:
+						pause = False
+						Run = False
+					if event.key == K_SPACE:
+						pause = False
 
 		pygame.display.flip()
 		clock.tick(60)	
