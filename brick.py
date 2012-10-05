@@ -30,8 +30,8 @@ BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
 # Handle ball movement and animation
-horizontal = 5
-vertical = 5
+horizontal = 3
+vertical = 3
 ballSpeed = [horizontal, vertical]
 
 # Handle paddle horizontal movement (the paddle will never move vertically)
@@ -60,19 +60,22 @@ def drawLevel():
 			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
 			bricks.append(newBrick)
 
+# deviation
+dev = 2
 # Function to check if the ball has hit the paddle - Under construction
 def ballHasHitPaddle(ball, paddle):
-	if ball.bottom == paddle.top:
-		return True
+	if (paddle.top - dev) <= ball.bottom <= (paddle.top + dev):
+		if ball.right >= paddle.left and ball.left <= paddle.right:
+			return True
 	else:
 		return False
 
 # Function to check if the ball has hit a brick.
 def ballHasHitBrick(ball, b):
-	if (b[0].top - 3) <= ball.bottom <= (b[0].top + 3) or (b[0].bottom - 3) <= ball.top <= (b[0].bottom + 3):
+	if (b[0].top - dev) <= ball.bottom <= (b[0].top + dev) or (b[0].bottom - dev) <= ball.top <= (b[0].bottom + dev):
 		if ball.right >= b[0].left and ball.left <= b[0].right:
 			return True
-	elif (b[0].right - 3) <= ball.left <= (b[0].right + 3) or (b[0].left - 3) <= ball.right <= (b[0].left + 3):
+	elif (b[0].right - dev) <= ball.left <= (b[0].right + dev) or (b[0].left - dev) <= ball.right <= (b[0].left + dev):
 		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
 			return True
 	else: 
@@ -134,17 +137,18 @@ if __name__ == '__main__':
 		if ball.bottom > SCREENHEIGHT:
 			ballSpeed[1] = -ballSpeed[1]
 			lives -= 1
-		if ball.bottom == player.top:
-			ballSpeed[1] = -ballSpeed[1]
+		if ballHasHitPaddle(ball, player): 
+			if (player.top - dev) <= ball.bottom <= (player.top + dev):
+				ballSpeed[1] = -ballSpeed[1]
 
 		screen.fill((20,50,150))
 
 		# Bricks collision detection, if the ball hits a brick, the brick is removed and the ball changes direction.
 		for b in bricks:
 			if ballHasHitBrick(ball, b):
-				if b[0].right == ball.left or b[0].left == ball.right:
+				if (b[0].right - dev) <= ball.left <= (b[0].right + dev) or (b[0].left - dev) <= ball.right <= (b[0].left + dev):
 					ballSpeed[0] = -ballSpeed[0]
-				elif b[0].bottom == ball.top or b[0].top == ball.bottom:
+				elif (b[0].top - dev) <= ball.bottom <= (b[0].top + dev) or (b[0].bottom - dev) <= ball.top <= (b[0].bottom + dev):
 					ballSpeed[1] = -ballSpeed[1]
 				else:
 					None
@@ -159,12 +163,12 @@ if __name__ == '__main__':
 
 		# Draw the no. of lives and current score on the screen
 		drawText('Score: %s' % (score), font, screen, 10, 0)
-		drawText('Lives: %s' % (lives), font, screen, 150, 0)
+		drawText('Lives: %s' % (lives), font, screen, 200, 0)
 
 		# Draw the ball and the paddle
 		pygame.draw.rect(screen, WHITE, ball)
 		pygame.draw.rect(screen, BLACK, player)
 
 		pygame.display.flip()
-		clock.tick(30)	
+		clock.tick(60)	
 	pygame.quit()
