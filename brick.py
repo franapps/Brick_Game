@@ -20,12 +20,14 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PURPLE = (205, 0, 115)
 
-# Draw the players paddle
+# Set up the Paddle
 PADDLEWIDTH = 100
 PADDLEHEIGHT = 20
 player = pygame.Rect(int((SCREENWIDTH/2)-(PADDLEWIDTH/2)), int(SCREENHEIGHT-PADDLEHEIGHT), PADDLEWIDTH, PADDLEHEIGHT)
+# Handle paddle horizontal movement (the paddle will never move vertically)
+paddleSpeed = 5
 
-# Draw the ball
+# Set up the ball
 BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
@@ -33,12 +35,9 @@ ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH
 horizontal = 3
 vertical = 3
 ballSpeed = [horizontal, vertical]
-# deviation
+# Deviation for collision detection. Returns Int value.
 devx = int(round(horizontal/2))
 devy = int(round(vertical/2))
-
-# Handle paddle horizontal movement (the paddle will never move vertically)
-paddleSpeed = 5
 
 # set up fonts
 font = pygame.font.SysFont(None, 36)
