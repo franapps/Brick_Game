@@ -138,8 +138,10 @@ if __name__ == '__main__':
 		if ball.top < 0:
 			ballSpeed[1] = -ballSpeed[1]
 		if ball.bottom > SCREENHEIGHT:
-			ballSpeed[1] = -ballSpeed[1]
 			lives -= 1
+			ball.centerx = int(SCREENWIDTH/2)
+			ball.centery = int(SCREENHEIGHT/2)
+			pause = True
 		if ballHasHitPaddle(ball, player): 
 			if (player.top - devy) <= ball.bottom <= (player.top + devy):
 				ballSpeed[1] = -ballSpeed[1]
@@ -174,6 +176,8 @@ if __name__ == '__main__':
 
 		# Pause Loop.
 		while pause == True:
+			drawText('PAUSED', font, screen, int((SCREENWIDTH/2)-50), int((SCREENHEIGHT/2)-7))
+			pygame.display.update()
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					pause = False
