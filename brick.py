@@ -107,7 +107,7 @@ if __name__ == '__main__':
 					moveRight = False
 		# Handles control using the mouse
 			if event.type == MOUSEMOTION:
-				# If the mouse moves, move the player where the cursor is.
+				# If the mouse moves, move the paddle where the cursor is.
 				player.move_ip(event.pos[0] - player.centerx, 0)
 
 		# Move the paddle left and right.
@@ -116,7 +116,7 @@ if __name__ == '__main__':
 		if moveRight and player.right < SCREENWIDTH:
 			player.move_ip(paddleSpeed, 0)
 
-		# move the mouse cursor to match the player.
+		# Move the mouse cursor to match the paddle.
 		pygame.mouse.set_pos(player.centerx, player.centery)
 
 		# Ball bounces off the walls and ceiling, player loses a life when the ball hits the bottom of the screen.
@@ -138,8 +138,10 @@ if __name__ == '__main__':
 			if ballHasHitBrick(ball, b):
 				if b[0].right == ball.left or b[0].left == ball.right:
 					ballSpeed[0] = -ballSpeed[0]
-				if b[0].bottom == ball.top or b[0].top == ball.bottom:
+				elif b[0].bottom == ball.top or b[0].top == ball.bottom:
 					ballSpeed[1] = -ballSpeed[1]
+				else:
+					None
 				bricks.remove(b)
 				score += 100
 			pygame.draw.rect(screen, b[1], b[0])
@@ -149,9 +151,11 @@ if __name__ == '__main__':
 			lives += 1
 			score += 1
 
+		# Draw the no. of lives and current score on the screen
 		drawText('Score: %s' % (score), font, screen, 10, 0)
 		drawText('Lives: %s' % (lives), font, screen, 150, 0)
 
+		# Draw the ball and the paddle
 		pygame.draw.rect(screen, WHITE, ball)
 		pygame.draw.rect(screen, BLACK, player)
 
