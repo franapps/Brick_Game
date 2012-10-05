@@ -69,10 +69,10 @@ def ballHasHitPaddle(ball, paddle):
 
 # Function to check if the ball has hit a brick.
 def ballHasHitBrick(ball, b):
-	if ball.bottom == b[0].top or ball.top == b[0].bottom:
+	if (b[0].top - 3) <= ball.bottom <= (b[0].top + 3) or (b[0].bottom - 3) <= ball.top <= (b[0].bottom + 3):
 		if ball.right >= b[0].left and ball.left <= b[0].right:
 			return True
-	elif ball.left == b[0].right or ball.right == b[0].left:
+	elif (b[0].right - 3) <= ball.left <= (b[0].right + 3) or (b[0].left - 3) <= ball.right <= (b[0].left + 3):
 		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
 			return True
 	else: 
@@ -115,6 +115,12 @@ if __name__ == '__main__':
 			player.move_ip(-1 * paddleSpeed, 0)
 		if moveRight and player.right < SCREENWIDTH:
 			player.move_ip(paddleSpeed, 0)
+
+		# Stop the paddle from moving off screen
+		if player.left < 0:
+			player.left = 0
+		if player.right > SCREENWIDTH:
+			player.right = SCREENWIDTH
 
 		# Move the mouse cursor to match the paddle.
 		pygame.mouse.set_pos(player.centerx, player.centery)
