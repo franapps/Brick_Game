@@ -144,6 +144,14 @@ if __name__ == '__main__':
 			pause = True
 		if ballHasHitPaddle(ball, player): 
 			if (player.top - devy) <= ball.bottom <= (player.top + devy):
+				if player.left <= ball.centerx <= (player.centerx - 25):
+					ballSpeed[0] = -3
+				if (player.centerx - 25) <= ball.centerx < player.centerx:
+					ballSpeed[0] = -1
+				if player.centerx < ball.centerx <= (player.centerx + 25):
+					ballSpeed[0] = 1
+				if (player.centerx + 25) <= ball.centerx <= player.right:
+					ballSpeed[0] = 3
 				ballSpeed[1] = -ballSpeed[1]
 
 		screen.fill((20,50,150))
