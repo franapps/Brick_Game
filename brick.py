@@ -20,6 +20,25 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PURPLE = (205, 0, 115)
 
+# Based on pythagoras theorem, func to find the height given the base (x or horizontal) and hypoteneuse (ballspeed/velocity).
+def pythag(x, y, speed):
+	if speed**2 != x**2 + y**2:
+		y = math.sqrt(speed**2 - x**2)
+		return y
+	else:
+		return y
+
+# set up fonts
+font = pygame.font.SysFont(None, 36)
+TEXTCOLOR = (255,255,255)
+
+# creates a function to draw text
+def drawText(text, font, surface, x, y):
+	textobj = font.render(text, 1, TEXTCOLOR)
+	textrect = textobj.get_rect()
+	textrect.topleft = (x, y)
+	surface.blit(textobj, textrect)
+
 # Set up the Paddle
 PADDLEWIDTH = 100
 PADDLEHEIGHT = 20
@@ -34,21 +53,12 @@ ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH
 # Handle ball movement and deviation.
 horizontal = 3
 vertical = 3
+speed = 5
+vertical = pythag(horizontal, vertical, speed)
 ballSpeed = [horizontal, vertical]
 # Deviation for collision detection. Returns Int value.
 devx = int(round(horizontal/2))
 devy = int(round(vertical/2))
-
-# set up fonts
-font = pygame.font.SysFont(None, 36)
-TEXTCOLOR = (255,255,255)
-
-# creates a function to draw text
-def drawText(text, font, surface, x, y):
-	textobj = font.render(text, 1, TEXTCOLOR)
-	textrect = textobj.get_rect()
-	textrect.topleft = (x, y)
-	surface.blit(textobj, textrect)
 
 # Setup the bricks
 WIDTH = 50
@@ -90,6 +100,7 @@ if __name__ == '__main__':
 	drawLevel()
 	# Run game loop
 	while Run:
+		ballSpeed[1] = pythag(horizontal, vertical, speed)
 		for event in pygame.event.get():
 			# handles quit event
 			if event.type == pygame.QUIT:
