@@ -5,7 +5,7 @@ pygame.init()
 # center window
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-# basic pygame window stuff (background color needs to be set.)
+# basic pygame window stuff
 SCREENWIDTH = 700
 SCREENHEIGHT = 500
 screen = pygame.display.set_mode((SCREENWIDTH,SCREENHEIGHT))
@@ -20,25 +20,6 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PURPLE = (205, 0, 115)
 
-# Based on pythagoras theorem, func to find the height given the base (x or horizontal) and hypoteneuse (ballspeed/velocity).
-def pythag(x, y, speed):
-	if speed**2 != x**2 + y**2:
-		y = math.sqrt(speed**2 - x**2)
-		return y
-	else:
-		return y
-
-# set up fonts
-font = pygame.font.SysFont(None, 36)
-TEXTCOLOR = (255,255,255)
-
-# creates a function to draw text
-def drawText(text, font, surface, x, y):
-	textobj = font.render(text, 1, TEXTCOLOR)
-	textrect = textobj.get_rect()
-	textrect.topleft = (x, y)
-	surface.blit(textobj, textrect)
-
 # Set up the Paddle
 PADDLEWIDTH = 100
 PADDLEHEIGHT = 20
@@ -51,14 +32,30 @@ BALLWIDTH = 10
 ball = pygame.Rect(int(SCREENWIDTH/2), int(SCREENHEIGHT/2), BALLWIDTH, BALLWIDTH)
 
 # Handle ball movement and deviation.
-horizontal = 3
-vertical = 3
 speed = 5
-vertical = pythag(horizontal, vertical, speed)
-ballSpeed = [horizontal, vertical]
+ballSpeed = [3, 3] # Values for x and y
+ballSpeed[1] = pythag(ballSpeed[0], speed)
 # Deviation for collision detection. Returns Int value.
-devx = int(round(horizontal/2))
-devy = int(round(vertical/2))
+devx = int(round(ballSpeed[0]/2))
+devy = int(round((ballSpeed[1]/2)+0.6))
+
+# set up fonts
+font = pygame.font.SysFont(None, 36)
+TEXTCOLOR = (255,255,255)
+# creates a function to draw text
+def drawText(text, font, surface, x, y):
+	textobj = font.render(text, 1, TEXTCOLOR)
+	textrect = textobj.get_rect()
+	textrect.topleft = (x, y)
+	surface.blit(textobj, textrect)
+
+# Based on pythagoras theorem, func to find the height given the base (x or horizontal) and hypoteneuse (ballspeed/velocity).
+def pythag(x, speed):
+	if speed**2 != x**2 + ballSpeed[1]**2:
+		ballSpeed[1] = math.sqrt(speed**2 - x**2)
+		return ballSpeed[1]
+	else:
+		return ballSpeed[1]
 
 # Setup the bricks
 WIDTH = 50
@@ -100,7 +97,6 @@ if __name__ == '__main__':
 	drawLevel()
 	# Run game loop
 	while Run:
-		ballSpeed[1] = pythag(horizontal, vertical, speed)
 		for event in pygame.event.get():
 			# handles quit event
 			if event.type == pygame.QUIT:
@@ -157,12 +153,16 @@ if __name__ == '__main__':
 			if (player.top - devy) <= ball.bottom <= (player.top + devy):
 				if player.left <= ball.centerx <= (player.centerx - 25):
 					ballSpeed[0] = -3
+					ballSpeed[1] = pythag(ballSpeed[0], speed)
 				if (player.centerx - 25) <= ball.centerx < player.centerx:
 					ballSpeed[0] = -1
+					ballSpeed[1] = pythag(ballSpeed[0], speed)
 				if player.centerx < ball.centerx <= (player.centerx + 25):
 					ballSpeed[0] = 1
+					ballSpeed[1] = pythag(ballSpeed[0], speed)
 				if (player.centerx + 25) <= ball.centerx <= player.right:
 					ballSpeed[0] = 3
+					ballSpeed[1] = pythag(ballSpeed[0], speed)
 				ballSpeed[1] = -ballSpeed[1]
 
 		screen.fill((20,50,150))
