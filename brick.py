@@ -237,13 +237,13 @@ while True:
 
 	if lives == 0:
 		screen.fill((20,50,150))
-		drawText('GAME OVER, YEAH', font, screen, 300, 240)
-		drawText('Press any key to play again or Esc to quit.', font, screen, 150, 280)
+		drawText('GAME OVER, YEAH', font, screen, 250, 200)
+		drawText('Press any key to play again or Esc to quit.', font, screen, 100, 240)
 		pygame.display.update()
 		waitForPlayerToPressKey()
 	elif len(bricks) == 0:
-		drawText('You Won!', font, screen, 300, 240)
-		drawText('Press any key to play again or Esc to quit.', font, screen, 150, 280)
+		drawText('You Won!', font, screen, 250, 200)
+		drawText('Press any key to play again or Esc to quit.', font, screen, 100, 240)
 		pygame.display.update()
 		waitForPlayerToPressKey()
 	else:
