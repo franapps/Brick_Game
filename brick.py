@@ -2,7 +2,59 @@ import os, pygame, random, math
 from pygame.locals import *
 pygame.init()
 
-# center window
+def waitForPlayerToPressKey():
+	while True:
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+			if event.type == KEYDOWN:
+				if event.key == K_ESCAPE: # pressing escape quits
+					pygame.quit()
+				return
+
+# creates a function to draw text
+def drawText(text, font, surface, x, y):
+	textobj = font.render(text, 1, TEXTCOLOR)
+	textrect = textobj.get_rect()
+	textrect.topleft = (x, y)
+	surface.blit(textobj, textrect)
+	return textrect
+
+# Based on pythagoras theorem, func to find the height given the base (x or horizontal) and hypoteneuse (ballspeed/velocity).
+def pythag(x, speed):
+	if speed**2 != x**2 + ballSpeed[1]**2:
+		ballSpeed[1] = math.sqrt(speed**2 - x**2)
+		return ballSpeed[1]
+	else:
+		return ballSpeed[1]
+
+# Lays out bricks in 8x8 grid
+def drawLevel():
+	for i in range(3, 11):
+		for j in range(3, 11):
+			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
+			bricks.append(newBrick)
+
+# Function to check if the ball has hit the paddle - Under construction - currently does not recognise side collisions.
+def ballHasHitPaddle(ball, paddle):
+	if (paddle.top - devy) <= ball.bottom <= (paddle.top + devy):
+		if ball.right >= paddle.left and ball.left <= paddle.right:
+			return True
+	else:
+		return False
+
+# Function to check if the ball has hit a brick.
+def ballHasHitBrick(ball, b):
+	if (b[0].top - devy) <= ball.bottom <= (b[0].top + devy) or (b[0].bottom - devy) <= ball.top <= (b[0].bottom + devy):
+		if ball.right >= b[0].left and ball.left <= b[0].right:
+			return True
+	elif (b[0].right - devx) <= ball.left <= (b[0].right + devx) or (b[0].left - devx) <= ball.right <= (b[0].left + devx):
+		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
+			return True
+	else: 
+		return False
+
+# centre window
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 # basic pygame window stuff
@@ -42,53 +94,20 @@ devy = int(round((ballSpeed[1]/2)+0.6))
 # set up fonts
 font = pygame.font.SysFont(None, 36)
 TEXTCOLOR = (255,255,255)
-# creates a function to draw text
-def drawText(text, font, surface, x, y):
-	textobj = font.render(text, 1, TEXTCOLOR)
-	textrect = textobj.get_rect()
-	textrect.topleft = (x, y)
-	surface.blit(textobj, textrect)
-
-# Based on pythagoras theorem, func to find the height given the base (x or horizontal) and hypoteneuse (ballspeed/velocity).
-def pythag(x, speed):
-	if speed**2 != x**2 + ballSpeed[1]**2:
-		ballSpeed[1] = math.sqrt(speed**2 - x**2)
-		return ballSpeed[1]
-	else:
-		return ballSpeed[1]
 
 # Setup the bricks
 WIDTH = 50
 HEIGHT = 20
 color = [BLACK, WHITE, RED, GREEN, PURPLE]
 bricks = []
-# Lays out bricks in 8x8 grid
-def drawLevel():
-	for i in range(3, 11):
-		for j in range(3, 11):
-			newBrick = [pygame.Rect((i * WIDTH), (j * HEIGHT), WIDTH, HEIGHT), color[(random.randint(1, 5)-1)], None]
-			bricks.append(newBrick)
 
-# Function to check if the ball has hit the paddle - Under construction - currently does not recognise side collisions.
-def ballHasHitPaddle(ball, paddle):
-	if (paddle.top - devy) <= ball.bottom <= (paddle.top + devy):
-		if ball.right >= paddle.left and ball.left <= paddle.right:
-			return True
-	else:
-		return False
+# Game's opening screen
+drawText('Welcome to Brick!', font, screen, 250, 200)
+drawText('Press any key to play or Esc to quit.', font, screen, 150, 280)
+pygame.display.update()
+waitForPlayerToPressKey()
 
-# Function to check if the ball has hit a brick.
-def ballHasHitBrick(ball, b):
-	if (b[0].top - devy) <= ball.bottom <= (b[0].top + devy) or (b[0].bottom - devy) <= ball.top <= (b[0].bottom + devy):
-		if ball.right >= b[0].left and ball.left <= b[0].right:
-			return True
-	elif (b[0].right - devx) <= ball.left <= (b[0].right + devx) or (b[0].left - devx) <= ball.right <= (b[0].left + devx):
-		if ball.bottom >= b[0].top and ball.top <= b[0].bottom:
-			return True
-	else: 
-		return False
-
-if __name__ == '__main__':
+while True:
 	Run = True
 	lives = 3
 	score = 0
@@ -207,7 +226,26 @@ if __name__ == '__main__':
 						Run = False
 					if event.key == K_SPACE:
 						pause = False
+			if lives == 0:
+				break
+
+		if lives == 0 or len(bricks) == 0:
+			Run = False
 
 		pygame.display.flip()
-		clock.tick(60)	
-	pygame.quit()
+		clock.tick(60)
+
+	if lives == 0:
+		screen.fill((20,50,150))
+		drawText('GAME OVER, YEAH', font, screen, 300, 240)
+		drawText('Press any key to play again or Esc to quit.', font, screen, 150, 280)
+		pygame.display.update()
+		waitForPlayerToPressKey()
+	elif len(bricks) == 0:
+		drawText('You Won!', font, screen, 300, 240)
+		drawText('Press any key to play again or Esc to quit.', font, screen, 150, 280)
+		pygame.display.update()
+		waitForPlayerToPressKey()
+	else:
+		break
+pygame.quit()
